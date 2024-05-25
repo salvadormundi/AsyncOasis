@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import "dotenv/config";
+import "dotenv/config"
 
-const dbname = process.env.DBNAME;
-const username = process.env.MONGOUSER;
-const password = process.env.MONGOPASS;
+// const dbname = process.env.DBNAME;
+// const username = process.env.MONGOUSER;
+// const password = process.env.MONGOPASS;
 const url = process.env.MONGOURL;
 
 async function connectToDB() {

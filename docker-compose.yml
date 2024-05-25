@@ -1,0 +1,41 @@
+services:
+  app:
+    build: .
+    ports:
+      - "6969:6969"
+    depends_on:
+      - db
+    environment:
+      SERVERPORT: 6969
+      SHUTDOWNINTERVAL: 2000
+      MONGOUSER: SirenStore
+      MONGOPASS: GosViVDAkey13sxf
+      DBNAME: sirenstore
+      MONGOURL: mongodb+srv://SirenStore:GosViVDAkey13sxf@sirenstore.dwpooyr.mongodb.net/?retryWrites=true&w=majority&appName=SirenStore
+
+  db:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  # mongo-admin:
+  #   image: mongo-express
+  #   restart: always
+  #   ports:
+  #     - 8081:8081
+  #   environment:
+  #     ADMIN_USERNAME: kadali
+  #     ADMIN_PASSWORD: 12345
+  #     MONGO_SERVER: mongodb
+  #   networks:
+  #     - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
