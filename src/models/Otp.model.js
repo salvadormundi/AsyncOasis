@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const OtpSchema = new mongoose.Schema(
   {
@@ -12,7 +12,7 @@ const OtpSchema = new mongoose.Schema(
 
 mongoose.pluralize(null);
 
-export const OtpModel = mongoose.model("Otp", OtpSchema);
+export const OtpModel = mongoose.model('Otp', OtpSchema);
 
 const otpIndexes = [{ otp: -1, createdAt: -1 }];
 

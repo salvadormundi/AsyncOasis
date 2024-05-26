@@ -7,40 +7,25 @@
 // Services are typically called by controllers to perform specific tasks.
 
 import { OtpModel } from '../models/Otp.model.js';
-import { generateOtp } from '../services/Auth.service.js';
 import {
-  validateEmail,
-  validatePhoneNumber,
-} from '../utils/Validation.utils.js';
+  generateOtp,
+  sendOtpValidation,
+} from '../services/Auth.service.js';
 
 export const sendOtp = async (req, res, next) => {
-  const { email = 'apdna@gmail.com', phoneNumber } =
+  const { email = 'apanda995@gmail.com', phoneNumber } =
     req.query;
-  const a = [
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1,
-    1, 1, 1, 11, 1, 1, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  ];
-  if (!email && !phoneNumber) {
-    throw new Error('Email or phone number is required');
-  }
+  const type = sendOtpValidation(email, phoneNumber);
+  const query = {
+    [type]: type === 'email' ? email : phoneNumber,
+    otp: generateOtp(),
+  };
+  const otpModel = new OtpModel(query);
+  await otpModel.save();
 
-  const otp = generateOtp();
-  if (email) {
-    validateEmail(email);
-    const otpModel = new OtpModel({
-      email,
-      otp,
-    });
-    await otpModel.save();
-  } else {
-    validatePhoneNumber(phoneNumber);
-    const otpModel = new OtpModel({
-      phoneNumber,
-      otp,
-    });
-    await otpModel.save();
-  }
-  res.json(`hello ${otp}`);
+  res.json(`hello`);
 };
 
-export const verifyOtp = async (req, res, next) => {};
+export const verifyOtp = async (req, res, next) => {
+  const { email, phoneNumber, otp } = req.query;
+};
