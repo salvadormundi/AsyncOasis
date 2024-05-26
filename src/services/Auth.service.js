@@ -10,6 +10,7 @@ export const generateOtp = () => {
     .toString()
     .padStart(5, '0');
 };
+
 export const sendOtpValidation = (email, phoneNumber) => {
   if (!email && !phoneNumber) {
     throw new Error('Email or phone number is required');
@@ -21,4 +22,18 @@ export const sendOtpValidation = (email, phoneNumber) => {
     validatePhoneNumber(phoneNumber);
     return 'phoneNumber';
   }
+};
+
+export const verifyOtpValidation = (
+  email,
+  phoneNumber,
+  otp
+) => {
+  if (!email && !phoneNumber) {
+    throw new Error('Email or phone number is required');
+  }
+
+  if (!otp.lenght === 5) throw new Error('Otp is required');
+
+  return email ? 'email' : 'phoneNumber';
 };

@@ -11,10 +11,10 @@ import {
   generateOtp,
   sendOtpValidation,
 } from '../services/Auth.service.js';
+import { sendResponse } from '../utils/Node.util.js';
 
 export const sendOtp = async (req, res, next) => {
-  const { email = 'apanda995@gmail.com', phoneNumber } =
-    req.query;
+  const { email, phoneNumber } = req.query;
   const type = sendOtpValidation(email, phoneNumber);
   const query = {
     [type]: type === 'email' ? email : phoneNumber,
@@ -23,9 +23,20 @@ export const sendOtp = async (req, res, next) => {
   const otpModel = new OtpModel(query);
   await otpModel.save();
 
-  res.json(`hello`);
+  sendResponse(res, 200, 'Otp sent successfully');
 };
 
 export const verifyOtp = async (req, res, next) => {
   const { email, phoneNumber, otp } = req.query;
+  const type = verifyOtpValidation();
+  const query = {
+    [type]: type === 'email' ? email : phoneNumber,
+    otp,
+  };
+  const verified = await OtpModel.findOne(query);
+  if (verified) {
+    sendResponse(res, 200, 'Otp verified successfully');
+  } else {
+    sendResponse(res, 406, 'Otp verified successfully');
+  }
 };

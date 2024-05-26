@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const OtpSchema = new mongoose.Schema(
   {
     email: { type: String },
-    otp: { type: String, index: true },
+    otp: { type: String },
     phoneNumber: String,
     whatsappOtp: String,
   },
