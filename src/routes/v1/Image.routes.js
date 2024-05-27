@@ -3,10 +3,10 @@ import { Router } from 'express';
 
 const ImageRouter = Router();
 
-ImageRouter.route('/get').get(imgController.getImage);
+ImageRouter.route('/get/:id').get(imgController.getImage);
 ImageRouter.route('/post').post(imgController.saveImage);
-ImageRouter.route('/update').put(imgController.updateImage);
-ImageRouter.route('/delete').delete(
+ImageRouter.route('/update/:id').put(imgController.updateImage);
+ImageRouter.route('/delete/:id').delete(
   imgController.deleteImage
 );
 

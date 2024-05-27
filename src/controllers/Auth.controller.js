@@ -8,35 +8,69 @@
 
 import { OtpModel } from '../models/Otp.model.js';
 import {
+  createUser,
   generateOtp,
   sendOtpValidation,
+  verifyOtpValidation,
 } from '../services/Auth.service.js';
 import { sendResponse } from '../utils/Node.util.js';
 
 export const sendOtp = async (req, res, next) => {
-  const { email, phoneNumber } = req.query;
-  const type = sendOtpValidation(email, phoneNumber);
-  const query = {
-    [type]: type === 'email' ? email : phoneNumber,
-    otp: generateOtp(),
-  };
-  const otpModel = new OtpModel(query);
-  await otpModel.save();
-
-  sendResponse(res, 200, 'Otp sent successfully');
+  try {
+    const {
+      email,
+      phoneNumber,
+      isSignup = false,
+    } = req.query;
+    const type = await sendOtpValidation(
+      email,
+      phoneNumber,
+      isSignup
+    );
+    const otp = generateOtp();
+    const query = {
+      [type]: type === 'email' ? email : phoneNumber,
+      otp,
+    };
+    const otpModel = new OtpModel(query);
+    await otpModel.save();
+    setTimeout(async () => {
+      await otpModel.deleteOne({ otp });
+    }, 300000);
+    sendResponse(res, 200, 'Otp sent successfully');
+  } catch (error) {
+    sendResponse(res, 404, error.message);
+  }
 };
 
 export const verifyOtp = async (req, res, next) => {
   const { email, phoneNumber, otp } = req.query;
-  const type = verifyOtpValidation();
+  const type = verifyOtpValidation(email, phoneNumber, otp);
   const query = {
     [type]: type === 'email' ? email : phoneNumber,
     otp,
   };
-  const verified = await OtpModel.findOne(query);
-  if (verified) {
-    sendResponse(res, 200, 'Otp verified successfully');
+  const verified = await OtpModel.findOne(query)
+    .select({
+      _id: 1,
+    })
+    .lean();
+  if (verified?._id) {
+    const { user, accessToken } = createUser(
+      email,
+      phoneNumber
+    );
+    sendResponse(
+      res,
+      200,
+      'Otp verified successfully',
+      {
+        user,
+      },
+      null,
+      { accessToken }
+    );
   } else {
-    sendResponse(res, 406, 'Otp verified successfully');
+    sendResponse(res, 406, 'Otp invalid, please try again');
   }
 };

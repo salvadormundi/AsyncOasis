@@ -11,8 +11,8 @@ import {
 import v1Router from './src/routes/v1/v1.js';
 
 const app = express();
-const PORT = process.env.SERVERPORT;
-const disconnectInterval = process.env.SHUTDOWNINTERVAL;
+const PORT = process.env.SERVER_PORT;
+const disconnectInterval = process.env.SHUTDOWN_INTERVAL;
 await connectToDB();
 
 app.use(
@@ -21,7 +21,7 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(express.json());
 app.use(helmet());
 
