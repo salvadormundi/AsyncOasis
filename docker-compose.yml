@@ -12,6 +12,8 @@ services:
       MONGOPASS: GosViVDAkey13sxf
       DBNAME: sirenstore
       MONGOURL: mongodb+srv://SirenStore:GosViVDAkey13sxf@sirenstore.dwpooyr.mongodb.net/?retryWrites=true&w=majority&appName=SirenStore
+      AWS_ACCESS_ID: AKIAXYKJREAPMA5JGD43
+      AWS_ACCESS_SECRET_KEY: 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
 
   db:
     image: mongo
