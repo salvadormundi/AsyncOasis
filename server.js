@@ -17,7 +17,11 @@ await connectToDB();
 
 app.use(
   cors({
-    origin: '*',
+    origin: (origin, callback) => {
+      callback(null, true);
+    },
+    methods: 'GET,POST,PUT,DELETE,PATCH',
+    credentials: true,
     optionsSuccessStatus: 200,
   })
 );

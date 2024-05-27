@@ -4,6 +4,7 @@ import {
   validatePhoneNumber,
 } from '../utils/Validation.util.js';
 import { UserModel } from '../models/User.model.js';
+import jwt from 'jsonwebtoken';
 const secret = process.env.JWT_SECRET_KEY;
 
 /**
@@ -64,13 +65,15 @@ export const sendOtpValidation = async (
   }
   if (email) {
     validateEmail(email);
-    await checkIsSignedIn(email, phoneNumber);
     if (isSignup) {
+      await checkIsSignedIn(email, phoneNumber);
     }
     return 'email';
   } else {
     validatePhoneNumber(phoneNumber);
-    await checkIsSignedIn(email, phoneNumber);
+    if (isSignup) {
+      await checkIsSignedIn(email, phoneNumber);
+    }
     return 'phoneNumber';
   }
 };
@@ -92,7 +95,7 @@ export const verifyOtpValidation = (
     throw new Error('Email or phone number is required');
   }
 
-  if (!otp.lenght === 5) throw new Error('Otp is required');
+  if (!otp.length === 5) throw new Error('Otp is required');
 
   return email ? 'email' : 'phoneNumber';
 };
@@ -111,17 +114,17 @@ export const createUser = async (email, phoneNumber) => {
       ? email
       : phoneNumber,
   });
-  newUser.save((err, user) => {
-    if (err) {
-      throw new Error('Failed to login');
-    } else {
-      const token = jwt.sign(
-        {
-          _id: user?._id,
-        },
-        secret
-      );
-      return res.json({ user, token });
-    }
-  });
+
+  const data = await newUser.save();
+  const token = jwt.sign(
+    {
+      _id: data?._id,
+    },
+    secret
+  );
+  if (data) {
+    return { data, token };
+  } else {
+    throw new Error('Failed to login');
+  }
 };

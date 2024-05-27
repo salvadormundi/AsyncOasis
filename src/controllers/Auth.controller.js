@@ -56,19 +56,17 @@ export const verifyOtp = async (req, res, next) => {
     })
     .lean();
   if (verified?._id) {
-    const { user, accessToken } = createUser(
-      email,
-      phoneNumber
-    );
+    const data = await createUser(email, phoneNumber);
+
     sendResponse(
       res,
       200,
       'Otp verified successfully',
       {
-        user,
+        user: data?.data,
       },
       null,
-      { authorization: accessToken }
+      { authorization: data?.token }
     );
   } else {
     sendResponse(res, 406, 'Otp invalid, please try again');
