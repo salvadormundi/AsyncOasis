@@ -15,7 +15,12 @@ const PORT = process.env.SERVERPORT;
 const disconnectInterval = process.env.SHUTDOWNINTERVAL;
 await connectToDB();
 
-app.use(cors({ optionsSuccessStatus: 200 }));
+app.use(
+  cors({
+    origin: '*',
+    optionsSuccessStatus: 200,
+  })
+);
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(helmet());

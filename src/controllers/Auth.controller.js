@@ -7,40 +7,70 @@
 // Services are typically called by controllers to perform specific tasks.
 
 import { OtpModel } from '../models/Otp.model.js';
-import { generateOtp } from '../services/Auth.service.js';
 import {
-  validateEmail,
-  validatePhoneNumber,
-} from '../utils/Validation.utils.js';
+  createUser,
+  generateOtp,
+  sendOtpValidation,
+  verifyOtpValidation,
+} from '../services/Auth.service.js';
+import { sendResponse } from '../utils/Node.util.js';
 
 export const sendOtp = async (req, res, next) => {
-  const { email = 'apdna@gmail.com', phoneNumber } =
-    req.query;
-  const a = [
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1,
-    1, 1, 1, 11, 1, 1, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  ];
-  if (!email && !phoneNumber) {
-    throw new Error('Email or phone number is required');
-  }
-
-  const otp = generateOtp();
-  if (email) {
-    validateEmail(email);
-    const otpModel = new OtpModel({
+  try {
+    const {
       email,
-      otp,
-    });
-    await otpModel.save();
-  } else {
-    validatePhoneNumber(phoneNumber);
-    const otpModel = new OtpModel({
       phoneNumber,
+      isSignup = false,
+    } = req.query;
+    const type = await sendOtpValidation(
+      email,
+      phoneNumber,
+      isSignup
+    );
+    const otp = generateOtp();
+    const query = {
+      [type]: type === 'email' ? email : phoneNumber,
       otp,
-    });
+    };
+    const otpModel = new OtpModel(query);
     await otpModel.save();
+    setTimeout(async () => {
+      await otpModel.deleteOne({ otp });
+    }, 300000);
+    sendResponse(res, 200, 'Otp sent successfully');
+  } catch (error) {
+    sendResponse(res, 404, error.message);
   }
-  res.json(`hello ${otp}`);
 };
 
-export const verifyOtp = async (req, res, next) => {};
+export const verifyOtp = async (req, res, next) => {
+  const { email, phoneNumber, otp } = req.query;
+  const type = verifyOtpValidation(email, phoneNumber, otp);
+  const query = {
+    [type]: type === 'email' ? email : phoneNumber,
+    otp,
+  };
+  const verified = await OtpModel.findOne(query)
+    .select({
+      _id: 1,
+    })
+    .lean();
+  if (verified?._id) {
+    const { user, accessToken } = createUser(
+      email,
+      phoneNumber
+    );
+    sendResponse(
+      res,
+      200,
+      'Otp verified successfully',
+      {
+        user,
+      },
+      null,
+      { accessToken }
+    );
+  } else {
+    sendResponse(res, 406, 'Otp invalid, please try again');
+  }
+};
