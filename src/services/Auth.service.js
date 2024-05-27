@@ -6,6 +6,11 @@ import {
 import { UserModel } from '../models/User.model.js';
 const secret = process.env.JWT_SECRET_KEY;
 
+/**
+ * Description placeholder
+ *
+ * @returns {*}
+ */
 export const generateOtp = () => {
   return crypto
     .randomInt(0, 100000)
@@ -13,6 +18,14 @@ export const generateOtp = () => {
     .padStart(5, '0');
 };
 
+/**
+ * Description placeholder
+ *
+ * @async
+ * @param {*} email
+ * @param {*} phoneNumber
+ * @returns {*}
+ */
 export const checkIsSignedIn = async (
   email,
   phoneNumber
@@ -32,6 +45,15 @@ export const checkIsSignedIn = async (
   }
 };
 
+/**
+ * Description placeholder
+ *
+ * @async
+ * @param {*} email
+ * @param {*} phoneNumber
+ * @param {*} isSignup
+ * @returns {unknown}
+ */
 export const sendOtpValidation = async (
   email,
   phoneNumber,
@@ -53,6 +75,14 @@ export const sendOtpValidation = async (
   }
 };
 
+/**
+ * Description placeholder
+ *
+ * @param {*} email
+ * @param {*} phoneNumber
+ * @param {*} otp
+ * @returns {("email" | "phoneNumber")}
+ */
 export const verifyOtpValidation = (
   email,
   phoneNumber,
@@ -67,6 +97,14 @@ export const verifyOtpValidation = (
   return email ? 'email' : 'phoneNumber';
 };
 
+/**
+ * Description placeholder
+ *
+ * @async
+ * @param {*} email
+ * @param {*} phoneNumber
+ * @returns {*}
+ */
 export const createUser = async (email, phoneNumber) => {
   const newUser = new UserModel({
     [email ? 'email' : 'phoneNumber']: email

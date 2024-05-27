@@ -1,4 +1,4 @@
-import { ImageModel } from '../models/Image.model';
+import { ImageModel } from '../models/Image.model.js';
 import {
   getImageMetadata,
   getResizedImage,

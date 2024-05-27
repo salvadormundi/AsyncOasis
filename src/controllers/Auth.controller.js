@@ -68,7 +68,7 @@ export const verifyOtp = async (req, res, next) => {
         user,
       },
       null,
-      { accessToken }
+      { authorization: accessToken }
     );
   } else {
     sendResponse(res, 406, 'Otp invalid, please try again');
