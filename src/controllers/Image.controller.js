@@ -50,7 +50,8 @@ async function getImage(req, res) {
   if (imageId === undefined) {
     return res.sendStatus(400).json('bad request');
   }
-  const resizeFac = req.query.resize;
+  const resizeFac =
+    req.query.resize === 0 ? undefined : req.query.resize;
   imgService
     .getService(imageId, resizeFac)
     .then(img => res.json({ success: true, image: img }))
