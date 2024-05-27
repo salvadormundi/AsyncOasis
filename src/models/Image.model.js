@@ -2,12 +2,12 @@ import mongoose from 'mongoose';
 
 const ImageSchema = new mongoose.Schema(
   {
-    imageBase64: { type: String, index: true },
+    imgId: { type: String, required: true, index: true },
   },
   { timestamps: true, collection: 'image' }
 );
 
-ImageSchema.post('save', () => console.log('Image Saved'));
+ImageSchema.index({ imgId: 1 });
 
 export const ImageModel = mongoose.model(
   'Image',
