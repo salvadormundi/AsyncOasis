@@ -6,12 +6,15 @@ services:
     depends_on:
       - db
     environment:
-      SERVERPORT: 6969
-      SHUTDOWNINTERVAL: 2000
-      MONGOUSER: SirenStore
-      MONGOPASS: GosViVDAkey13sxf
-      DBNAME: sirenstore
-      MONGOURL: mongodb+srv://SirenStore:GosViVDAkey13sxf@sirenstore.dwpooyr.mongodb.net/?retryWrites=true&w=majority&appName=SirenStore
+      DB_NAME: /run/secrets/DB_NAME
+      MONGO_USER: /run/secrets/MONGO_USER
+      MONGO_PASS: /run/secrets/MONGO_PASS
+      MONGO_URL_LOCAL: /run/secrets/MONGO_URL_LOCAL
+      MONGO_URL: /run/secrets/MONGO_URL
+      SERVER_PORT: 6969
+      SHUTDOWN_INTERVAL: 1000
+      AWS_ACCESS_ID: /run/secrets/AWS_ACCESS_ID
+      AWS_ACCESS_SECRET_KEY: /run/secrets/AWS_ACCESS_SECRET_KEY
 
   db:
     image: mongo
