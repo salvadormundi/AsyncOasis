@@ -15,7 +15,7 @@ export const authorizeMiddleware = (req, res, next) => {
           'Unauthorizes access'
         );
       }
-      req.body._id = decoded._id; // add decoded._id to req.body
+      req.body.userId = decoded._id; // add decoded._id to req.body
       next(); // call next middleware or route handler
     });
   } else {

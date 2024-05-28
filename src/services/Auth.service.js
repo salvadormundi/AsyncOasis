@@ -4,8 +4,14 @@ import {
   validatePhoneNumber,
 } from '../utils/Validation.util.js';
 import { UserModel } from '../models/User.model.js';
+import jwt from 'jsonwebtoken';
 const secret = process.env.JWT_SECRET_KEY;
 
+/**
+ * Description placeholder
+ *
+ * @returns {*}
+ */
 export const generateOtp = () => {
   return crypto
     .randomInt(0, 100000)
@@ -13,6 +19,14 @@ export const generateOtp = () => {
     .padStart(5, '0');
 };
 
+/**
+ * Description placeholder
+ *
+ * @async
+ * @param {*} email
+ * @param {*} phoneNumber
+ * @returns {*}
+ */
 export const checkIsSignedIn = async (
   email,
   phoneNumber
@@ -32,6 +46,15 @@ export const checkIsSignedIn = async (
   }
 };
 
+/**
+ * Description placeholder
+ *
+ * @async
+ * @param {*} email
+ * @param {*} phoneNumber
+ * @param {*} isSignup
+ * @returns {unknown}
+ */
 export const sendOtpValidation = async (
   email,
   phoneNumber,
@@ -42,17 +65,27 @@ export const sendOtpValidation = async (
   }
   if (email) {
     validateEmail(email);
-    await checkIsSignedIn(email, phoneNumber);
     if (isSignup) {
+      await checkIsSignedIn(email, phoneNumber);
     }
     return 'email';
   } else {
     validatePhoneNumber(phoneNumber);
-    await checkIsSignedIn(email, phoneNumber);
+    if (isSignup) {
+      await checkIsSignedIn(email, phoneNumber);
+    }
     return 'phoneNumber';
   }
 };
 
+/**
+ * Description placeholder
+ *
+ * @param {*} email
+ * @param {*} phoneNumber
+ * @param {*} otp
+ * @returns {("email" | "phoneNumber")}
+ */
 export const verifyOtpValidation = (
   email,
   phoneNumber,
@@ -62,28 +95,36 @@ export const verifyOtpValidation = (
     throw new Error('Email or phone number is required');
   }
 
-  if (!otp.lenght === 5) throw new Error('Otp is required');
+  if (!otp.length === 5) throw new Error('Otp is required');
 
   return email ? 'email' : 'phoneNumber';
 };
 
+/**
+ * Description placeholder
+ *
+ * @async
+ * @param {*} email
+ * @param {*} phoneNumber
+ * @returns {*}
+ */
 export const createUser = async (email, phoneNumber) => {
   const newUser = new UserModel({
     [email ? 'email' : 'phoneNumber']: email
       ? email
       : phoneNumber,
   });
-  newUser.save((err, user) => {
-    if (err) {
-      throw new Error('Failed to login');
-    } else {
-      const token = jwt.sign(
-        {
-          _id: user?._id,
-        },
-        secret
-      );
-      return res.json({ user, token });
-    }
-  });
+
+  const data = await newUser.save();
+  const token = jwt.sign(
+    {
+      _id: data?._id,
+    },
+    secret
+  );
+  if (data) {
+    return { data, token };
+  } else {
+    throw new Error('Failed to login');
+  }
 };
