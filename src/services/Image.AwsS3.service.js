@@ -29,7 +29,6 @@ const client = new S3Client({
 async function getS3Bucket() {
   return 'photobucket.asyncoasis';
 }
-
 /**
  *
  * @param {String} image: The base64 string of the image
